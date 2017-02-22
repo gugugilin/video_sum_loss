@@ -22,7 +22,7 @@ class ROUGE_L:
     def myactive_function(self,cost):
         x=math.pi*(2*cost-1)
         outloss=1/(1+math.exp(-1*x))
-        flag=1
+        flag=50
         if outloss>=self.baise1:
             flag=100*self.e
             outloss=1-(self.e)**((1-outloss)*self.step)
