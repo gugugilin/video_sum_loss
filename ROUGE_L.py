@@ -20,6 +20,8 @@ class ROUGE_L:
         for i in range(lis_len):
             self.targes.append(lis[i].split(" "))
     def myactive_function(self,cost):
+        if cost>=(1-self.t):
+            return (1-cost)
         x=math.pi*(2*cost-1)
         outloss=1/(1+math.exp(-1*x))
         flag=50
@@ -87,7 +89,7 @@ class ROUGE_L:
     def Caculate_ROUGE_L(self):
         max_p,max_q=self.Caculate_max_LCS()
         if max_p==0 or max_q==0:
-            return 100000
+            return 1000
         alpha=1.2
         if max_p>max_q:
             F=(1+alpha**2)*max_p*max_q/(max_p+(alpha**2)*max_q)
