@@ -20,7 +20,7 @@ class ROUGE_L:
         for i in range(lis_len):
             self.targes.append(lis[i].split(" "))
     def myactive_function(self,cost):
-        if cost>=(1-self.t):
+        if cost>=(1-self.t**2):
             return (1-cost)
         x=math.pi*(2*cost-1)
         outloss=1/(1+math.exp(-1*x))
