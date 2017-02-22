@@ -10,7 +10,7 @@ class ROUGE_L:
             self.e=0.1
         else:
             self.e=e
-        self.t=0.00001
+        self.t=0.0001
         return 
     def set_inputs(self,s1):
         self.inputs=s1.split(" ")
@@ -22,16 +22,16 @@ class ROUGE_L:
     def myactive_function(self,cost):
         x=math.pi*(2*cost-1)
         outloss=1/(1+math.exp(-1*x))
-        flag=10
+        flag=1
         if outloss>=self.baise1:
+            flag=100*self.e
             outloss=1-(self.e)**((1-outloss)*self.step)
         elif outloss<self.baise2:
+            flag=10/self.e
             outloss=(self.e)**((self.baise2-outloss)*self.step)
-        else:
-            flag=2/math.pi
-        outloss=(1-outloss)*(flag/self.e)
+        outloss=(1-outloss)*flag
         if outloss<=self.t:
-            outloss=self.t
+            outloss=0
         return outloss
 
     def mycross_entropy(self,cost):
@@ -43,7 +43,7 @@ class ROUGE_L:
         w2=wn.synsets(s2)
         if len(w1)==0 or len(w2)==0:
             if s1==s2:
-                return 3/math.pi
+                return 1
             else:
                 return 0
         out=w1[0].path_similarity(w2[0])
@@ -52,7 +52,7 @@ class ROUGE_L:
     def LCS(self,index_targes):
         s1=self.inputs
         s2=self.targes[index_targes]
-        baseline=2.0/math.pi
+        baseline=2/math.pi
         m=len(s1)+1
         n=len(s2)+1
         record=[[0 for i in range(n)] for j in range(m)]
@@ -65,7 +65,7 @@ class ROUGE_L:
                     record[i][j] = record[i-1][j]
                 else:
                     record[i][j] = record[i][j-1]
-        return record[m-2][n-1]
+        return record[m-1][n-1]
 
     def Caculate_max_LCS(self):
         if len(self.targes)<=0:
