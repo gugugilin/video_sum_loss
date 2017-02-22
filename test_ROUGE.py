@@ -9,7 +9,7 @@ for i in target_content:
     temp=[]
     temp.append(i)
     targes.append(temp)
-r1=rouge.ROUGE_L()
+r1=rouge.ROUGE_L(0.8,0.2,15,0.01)
 end = time.time()
 print("load time:",end-start)
 
@@ -20,4 +20,4 @@ for i in range(len(inputs)):
     start = time.time()
     a=r1.Caculate_ROUGE_L()
     end = time.time()
-    print("time: ",end-start,"score: ",a)
+    print("[",i+1,"] time: ",end-start,"score: ",a)

@@ -2,7 +2,15 @@ from nltk.corpus import wordnet as wn
 import math
 
 class ROUGE_L:
-    def __init__(self):
+    def __init__(self,baise1,baise2,step,e):
+        self.baise1=baise1
+        self.baise2=baise2
+        self.step=step
+        if e>=0.1:
+            self.e=0.1
+        else:
+            self.e=e
+        self.t=0.00001
         return 
     def set_inputs(self,s1):
         self.inputs=s1.split(" ")
@@ -14,18 +22,28 @@ class ROUGE_L:
     def myactive_function(self,cost):
         x=math.pi*(2*cost-1)
         outloss=1/(1+math.exp(-1*x))
+        flag=10
+        if outloss>=self.baise1:
+            outloss=1-(self.e)**((1-outloss)*self.step)
+        elif outloss<self.baise2:
+            outloss=(self.e)**((self.baise2-outloss)*self.step)
+        else:
+            flag=2/math.pi
+        outloss=(1-outloss)*(flag/self.e)
+        if outloss<=self.t:
+            outloss=self.t
         return outloss
 
     def mycross_entropy(self,cost):
-        outloss=-1*math.log(self.myactive_function(cost))
-        return outloss
+ #       outloss=-1*math.log(self.myactive_function(cost))
+        return self.myactive_function(cost)
 
     def similar_score(self,s1,s2):
         w1=wn.synsets(s1)
         w2=wn.synsets(s2)
         if len(w1)==0 or len(w2)==0:
             if s1==s2:
-                return 0.99
+                return 3/math.pi
             else:
                 return 0
         out=w1[0].path_similarity(w2[0])
@@ -63,14 +81,17 @@ class ROUGE_L:
                 LCS_score=self.LCS(i)
                 if max_q<LCS_score:
                     max_q=LCS_score
-                if max_p<(LCS_score/len(self.targes)):
-                    max_p=LCS_score/len(self.targes)
+                if max_p<(LCS_score/len(self.targes[i])):
+                    max_p=LCS_score/len(self.targes[i])
         return max_p,(max_q/len(self.inputs))
     def Caculate_ROUGE_L(self):
         max_p,max_q=self.Caculate_max_LCS()
         if max_p==0 or max_q==0:
             return 100000
         alpha=1.2
-        F=(1+alpha**2)*max_p*max_q/(max_p+(alpha**2)*max_q)
+        if max_p>max_q:
+            F=(1+alpha**2)*max_p*max_q/(max_p+(alpha**2)*max_q)
+        else:
+            F=(1+alpha**2)*max_p*max_q/(max_q+(alpha**2)*max_p)
         return self.mycross_entropy(F)
 
