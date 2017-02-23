@@ -54,7 +54,7 @@ class ROUGE_L:
     def LCS(self,index_targes):
         s1=self.inputs
         s2=self.targes[index_targes]
-        baseline=2/math.pi
+        baseline=1.5/math.pi
         m=len(s1)+1
         n=len(s2)+1
         record=[[0 for i in range(n)] for j in range(m)]
